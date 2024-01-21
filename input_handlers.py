@@ -30,21 +30,21 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         key = event.sym
 
         #If the up key is pressed, our character moves upwards.
-        if key == tcod.event.K_UP:
+        if key == tcod.event.KeySym.UP:
             action = MovementAction(dx=0,dy = -1)
         #If the up key is pressed, our character moves backwards.
-        elif key == tcod.event.K_DOWN:
+        elif key == tcod.event.KeySym.DOWN:
             action = MovementAction(dx=0,dy=1)
         #If the up key is pressed, our character moves leftwards.
-        elif key == tcod.event.K_LEFT:
+        elif key == tcod.event.KeySym.LEFT:
             action = MovementAction(dx=-1,dy=0)
         #If the up key is pressed, our character moves rightwards.
-        elif key == tcod.event.K_RIGHT:
+        elif key == tcod.event.KeySym.RIGHT:
             action = MovementAction(dx=1,dy = 0)
 
         #If the player presed the 'Escape' key, we return EscapeAction to exit the game.
         #EscapeAction will be used to do things like exit menus in a future.
-        elif key == tcod.event.K_ESCAPE:
+        elif key == tcod.event.KeySym.ESCAPE:
             action = EscapeAction()
         
         #We return the action.

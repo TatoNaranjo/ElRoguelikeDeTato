@@ -5,23 +5,31 @@ import tcod
 from actions import EscapeAction, MovementAction
 from input_handlers import EventHandler
 
+#Importing the Entity class into main.py
+from entity import Entity
+
+
+
 def main() ->None:
     #Defining Variables for the Screen Size. 
     #Todo: load this values from a JSON File.
     screen_width = 80
     screen_height = 50
 
-    #Tracking player's position at all times.
-    player_x = int (screen_width/2);
-    player_y = int (screen_height/2);
 
     #tcod will use our font from dejavu10x10_gs_tc.png
     tileset = tcod.tileset.load_tilesheet(
-        'dejavu10x10_gs_tc.png',32,8,tcod.tileset.CHARMAP_TCOD
+        'src/dejavu10x10_gs_tc.png',32,8,tcod.tileset.CHARMAP_TCOD
     )
 
     #An instance of our EventHandler Class
     event_handler = EventHandler()
+
+    #Initializing new entities
+    player = Entity(int(screen_width/2),int(screen_height/2),"@",(255,255,255))
+    npc = Entity(int(screen_width/2-5),int(screen_height/2),"@",(255,255,0))
+    entities = {npc,player}
+
     #This creates the Screen
     with tcod.context.new_terminal(
         screen_width,
@@ -38,7 +46,7 @@ def main() ->None:
         #Game loop core init.
         while True:
             #Printing our @ character.
-            root_console.print(x=player_x,y=player_y, string = '@')
+            root_console.print(x=player.x,y=player.y, string =player.char, fg=player.color)
 
             #This line is the core of the screen updating.
             #context.present updates the screen whit what we've told to display so far.
@@ -68,8 +76,7 @@ def main() ->None:
                 modify these two values will cause the symbol to move.
                 """
                 if(isinstance(action,MovementAction)):
-                    player_x+=action.dx
-                    player_y+=action.dy
+                    player.move(dx=action.dx,dy = action.dy)
     
                 #Else we quit the program if the player hits 'Esc' key.
                 elif isinstance(action,EscapeAction):
