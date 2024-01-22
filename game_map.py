@@ -11,6 +11,8 @@ class GameMap:
         # tile_types.floor that we created. This will fill self.tiles with floor tiles.
         self.width,self.height = width,height
         self.tiles = np.full((width,height),fill_value=tile_types.wall,order="F")
+        self.visible = np.full((width,height),fill_value=False, order="F") # Tiles the player can currently see.
+        self.explored = np.full((width,height),fill_value=False,order="F") # Tiles the player has seen before
 
         # Creates a small, three tile wide wall at the specified location.
         self.tiles[30:33,22] = tile_types.wall
@@ -24,4 +26,17 @@ class GameMap:
     # Using the console class's tiles_rgb method, now we render the entire map.
     # Much faster than console.print.
     def render(self,console:Console)->None:
-        console.tiles_rgb[0:self.width,0:self.height] = self.tiles["dark"]
+        """
+        Renders the map.
+
+        If a tile is in the "visible" array, then draw it with the "light" colors.
+        If it isn't, but it's in the "Explored" array, then draw it with the "dark" colors.
+        Otherwise the default is "SHROUD".
+        
+        """
+        console.tiles_rgb[0:self.width,0:self.height] = np.select(
+            condlist = [self.visible,self.explored],
+            choicelist = [self.tiles["light"],self.tiles["dark"]],
+            default = tile_types.SHROUD
+        )
+        
