@@ -6,7 +6,7 @@ from engine import Engine
 #Importing EventHandler from input_handlers
 from input_handlers import EventHandler
 
-from game_map import GameMap
+from procgen import generate_dungeon
 
 #Importing the Entity class into main.py
 from entity import Entity
@@ -18,9 +18,15 @@ def main() ->None:
     screen_width = 80
     screen_height = 50
 
-    #Added two integers whiche are used in the GameMap class to describe it's width and height.
+    #Added two integers which are used in the GameMap class to describe it's width and height.
     map_width = 80
     map_height = 45
+
+    #Added a few variables to set the maximum and minimum size of the rooms, along with the 
+    #Maximun number of rooms one floor can have.
+    room_max_size = 10
+    room_min_size = 6
+    max_rooms = 30
 
     #tcod will use our font from dejavu10x10_gs_tc.png
     tileset = tcod.tileset.load_tilesheet(
@@ -36,7 +42,15 @@ def main() ->None:
     entities = {npc,player}
 
     #The game_map variable holds our initialized GameMap.
-    game_map = GameMap(map_width,map_height)
+    game_map = generate_dungeon(
+        max_rooms=max_rooms,
+        room_min_size=room_min_size,
+        room_max_size=room_max_size,
+        map_width=map_width,
+        map_height = map_height,
+        player = player
+
+    )
     #We pass it into engine.
     engine = Engine(entities = entities, event_handler=event_handler,game_map = game_map, player=player)
     #This creates the Screen
