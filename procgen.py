@@ -11,7 +11,7 @@ from game_map import GameMap
 import tile_types
 
 if TYPE_CHECKING:
-    from entity import Entity
+    from engine import Engine
 
 class RectangularRoom:
     # Takes the x and y coordinates of the top left corner, and computes the bottom right
@@ -128,11 +128,12 @@ def generate_dungeon(
         map_width:int,
         map_height:int,
         max_monsters_per_room: int,
-        player: Entity,
+        engine:Engine,
 ) -> GameMap:
     """Generate a new Dungeon Map"""
     # Creating the initial GameMap.
-    dungeon = GameMap(map_width,map_height,entities=[player])
+    player = engine.player
+    dungeon = GameMap(engine,map_width,map_height,entities=[player])
 
     # Creating a running list of the game rooms.
     rooms: list[RectangularRoom]=[]
@@ -164,7 +165,7 @@ def generate_dungeon(
 
         if len(rooms) == 0:
             # The first room, where the player starts.
-            player.x, player.y = new_room.center
+            player.place(*new_room.center,dungeon)
 
         else: #All rooms after the first
             #Dig out a tunnel between this room and the previous one

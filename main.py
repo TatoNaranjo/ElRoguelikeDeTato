@@ -4,9 +4,6 @@ import copy
 
 from engine import Engine
 
-#Importing EventHandler from input_handlers
-from input_handlers import EventHandler
-
 from procgen import generate_dungeon
 
 import entity_factories
@@ -36,26 +33,23 @@ def main() ->None:
         'src/dejavu10x10_gs_tc.png',32,8,tcod.tileset.CHARMAP_TCOD
     )
 
-    #An instance of our EventHandler Class
-    event_handler = EventHandler()
-
-    #Initializing new entities
     player = copy.deepcopy(entity_factories.player)
+    engine = Engine(player=player)
 
     #The game_map variable holds our initialized GameMap.
-    game_map = generate_dungeon(
+    engine.game_map = generate_dungeon(
         max_rooms=max_rooms,
         room_min_size=room_min_size,
         room_max_size=room_max_size,
         map_width=map_width,
         map_height = map_height,
         max_monsters_per_room=max_monsters_per_room,
-        player = player
+        engine=engine,
 
     )
     #We pass it into engine.
-    engine = Engine(event_handler=event_handler,game_map = game_map, player=player)
-    #This creates the Screen
+    engine.update_fov()
+        #This creates the Screen
     with tcod.context.new_terminal(
         screen_width,
         screen_height,
@@ -73,10 +67,7 @@ def main() ->None:
             #Printing our @ character.
             engine.render(console=root_console,context=context)
 
-            #This line is the core of the screen updating.
-            #context.present updates the screen whit what we've told to display so far.
-            events = tcod.event.wait()
-            engine.handle_events(events)
+            engine.event_handler.handle_events()
             
 
 if __name__ == "__main__":

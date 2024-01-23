@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from typing import Tuple, TypeVar, TYPE_CHECKING
+from typing import Optional,Tuple, TypeVar, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from game_map import GameMap
@@ -12,6 +12,7 @@ class Entity:
     A generic object to represent players, enemies, items, etc.
     """
 
+    gamemap:GameMap
     # Initializer takes four arguments: x,y,char,color
     """
     x and y: Entity's coordinates on the map.
@@ -23,6 +24,7 @@ class Entity:
      """
     def __init__(
         self,
+        gamemap:Optional[GameMap]=None,
         x: int = 0,
         y: int = 0,
         char: str = "?",
@@ -36,6 +38,10 @@ class Entity:
         self.color = color
         self.name = name
         self.blocks_movement = blocks_movement
+        if gamemap:
+            #If gamemap isn't provided now then it will be set later.
+            self.gamemap=gamemap
+            gamemap.add(self)
 
 
     # Takes the GameMap instance, along with x and y for locations. It then creates a clone of the
@@ -46,9 +52,21 @@ class Entity:
         clone = copy.deepcopy(self)
         clone.x = x
         clone.y = y
+        clone.gamemap = gamemap
         gamemap.entities.add(clone)
         return clone    
 
+    def place(self, x:int, y:int, gamemap:Optional[GameMap]=None)->None:
+        """Place this entity at a new location. Handles moving across GameMaps"""
+        self.x = x
+        self.y = y
+
+        if gamemap:
+            if hasattr(self,"gamemap"): #Possibly undefined
+                self.gamemap.entities.remove(self)
+            self.gamemap = gamemap
+            gamemap.entities.add(self)
+            
     #This method takes dx and dy as arguments, and uses them to modify the entity's position.
     def move(self,dx:int,dy:int)->None:
         # Move the entity by a given amount
