@@ -24,15 +24,31 @@ class EscapeAction(Action):
     def perform(self,engine:Engine,entity:Entity)->None:
         raise SystemExit()
 
-#Used to describe when our player moves around.
-class MovementAction(Action):
-    #This passes the direction where the player is trying to move.
-    def __init__(self,dx:int,dy:int):
+class ActionWithDirection(Action):
+    def __init__(self,dx:int, dy:int):
         super().__init__()
 
         self.dx = dx
         self.dy = dy
-    
+
+    def perform(self,engine:Engine,entity:Entity)->None:
+        raise NotImplementedError()
+
+# This function describes the action used to perform a melee action.
+class MeleeAction(ActionWithDirection):
+    def perform(self,engine:Engine,entity:Entity)-> None:
+        dest_x = entity.x+self.dx
+        dest_y = entity.y+self.dy
+        target = engine.game_map.get_blocking_entity_at_location(dest_x,dest_y)
+        if not target:
+            return #There's nothing to attack
+        print(f"You kick the {target.name}, much to its annoyance!")
+
+
+
+#Used to describe when our player moves around.
+class MovementAction(ActionWithDirection):
+    #This passes the direction where the player is trying to move.
     def perform(self,engine:Engine,entity:Entity)-> None:
         dest_x = entity.x+self.dx
         dest_y = entity.y+self.dy
@@ -43,9 +59,26 @@ class MovementAction(Action):
         if not engine.game_map.in_bounds(dest_x,dest_y):
             return #Destination is out of Bounds.
         
+        # We check if the destination is blocked by a entity, if it is right just return 
+        # without doing anything.
+        if engine.game_map.get_blocking_entity_at_location(dest_x,dest_y):
+            return #Destination is blocked by an entity.
+        
         # We check if we're in a non walkable place, 
         # if it is right, just return without doing nothing.
         if not engine.game_map.tiles["walkable"][dest_x,dest_y]:
             return #Destination is blocked by a tile.
 
         entity.move(self.dx,self.dy)
+
+# This function decides which class between MeleeAction and MovementAction to return.
+class BumpAction(ActionWithDirection):
+    def perform(self,engine:Engine, entity:Entity)-> None:
+        dest_x = entity.x + self.dx
+        dest_y = entity.y + self.dy
+
+        if engine.game_map.get_blocking_entity_at_location(dest_x,dest_y):
+            return MeleeAction(self.dx, self.dy).perform(engine,entity)
+        
+        else:
+            return MovementAction(self.dx, self.dy).perform(engine,entity)

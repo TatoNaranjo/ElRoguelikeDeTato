@@ -4,6 +4,8 @@ import random
 from typing import Iterator,Tuple, TYPE_CHECKING
 
 import tcod
+import entity_factories
+
 
 from game_map import GameMap
 import tile_types
@@ -50,6 +52,29 @@ class RectangularRoom:
             and self.y1 <= other.y2
             and self.y2 >= other.y1
         )
+
+def place_entities(
+    room:RectangularRoom,dungeon:GameMap,maximum_monsters:int,
+)-> None:
+    # Takes a random integer between 0 and the provided maximum monstersm
+    # And iterates from 0 to the number.
+    number_of_monsters = random.randint(0,maximum_monsters)
+
+    for i in range(number_of_monsters):
+        # Select a random x and y to place the entity and do a quick check to make sure
+        # There's no other entities in that location before dropping the enemy here.
+        x = random.randint(room.x1+1,room.x2-1)
+        y = random.randint(room.y1+1,room.y2-1)
+        
+        if not any(entity.x == x and entity.y == y for entity in dungeon.entities):
+            #80% chance of there being an Orc
+            if random.random() < 0.8:
+                entity_factories.orc.spawn(dungeon,x,y)
+            #20% chance of there being a Troll.
+            else:
+                entity_factories.troll.spawn(dungeon,x,y)
+
+
 
 
 # Takes two arguments, both Tuples consisting of two integers. It should return an iterator of
@@ -102,11 +127,12 @@ def generate_dungeon(
         room_max_size:int,
         map_width:int,
         map_height:int,
+        max_monsters_per_room: int,
         player: Entity,
 ) -> GameMap:
     """Generate a new Dungeon Map"""
     # Creating the initial GameMap.
-    dungeon = GameMap(map_width,map_height)
+    dungeon = GameMap(map_width,map_height,entities=[player])
 
     # Creating a running list of the game rooms.
     rooms: list[RectangularRoom]=[]
@@ -149,6 +175,7 @@ def generate_dungeon(
             for x,y in tunnel_between(rooms[-1].center,new_room.center):
                 dungeon.tiles[x,y] = tile_types.floor
         
+        place_entities(new_room,dungeon,max_monsters_per_room)
         # Finally, append the new room to the list.
         rooms.append(new_room)
     return dungeon

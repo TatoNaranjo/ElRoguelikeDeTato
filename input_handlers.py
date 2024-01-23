@@ -4,7 +4,7 @@ from typing import Optional
 #Importing tcod event system to use tcod's event system.
 import tcod.event
 #Importing the Action class and it's subclasses from actions.
-from actions import Action,EscapeAction,MovementAction
+from actions import Action,EscapeAction,BumpAction
 
 #Creating a class called EventHandler which is a subclass of tcod's EventDispatch class.
 #Event Dispatch allows us to send an event to his proper method.
@@ -31,16 +31,16 @@ class EventHandler(tcod.event.EventDispatch[Action]):
 
         #If the up key is pressed, our character moves upwards.
         if key == tcod.event.KeySym.UP:
-            action = MovementAction(dx=0,dy = -1)
+            action = BumpAction(dx=0,dy = -1)
         #If the up key is pressed, our character moves backwards.
         elif key == tcod.event.KeySym.DOWN:
-            action = MovementAction(dx=0,dy=1)
+            action = BumpAction(dx=0,dy=1)
         #If the up key is pressed, our character moves leftwards.
         elif key == tcod.event.KeySym.LEFT:
-            action = MovementAction(dx=-1,dy=0)
+            action = BumpAction(dx=-1,dy=0)
         #If the up key is pressed, our character moves rightwards.
         elif key == tcod.event.KeySym.RIGHT:
-            action = MovementAction(dx=1,dy = 0)
+            action = BumpAction(dx=1,dy = 0)
 
         #If the player presed the 'Escape' key, we return EscapeAction to exit the game.
         #EscapeAction will be used to do things like exit menus in a future.
