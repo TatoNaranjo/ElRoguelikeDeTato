@@ -1,5 +1,7 @@
 #Import and inherit from BaseComponent.
 from __future__ import annotations
+
+import color
 from components.base_component import BaseComponent
 from input_handlers import GameOverEventHandler
 from render_order import RenderOrder
@@ -43,9 +45,11 @@ class Fighter(BaseComponent):
     def die(self)-> None:
         if self.engine.player is self.entity:
             death_message = "You Died!"
+            death_message_color = color.player_die
             self.engine.event_handler = GameOverEventHandler(self.engine)
         else:
             death_message = f"{self.entity.name} is Dead!"
+            death_message_color = color.enemy_die
 
         self.entity.char = "%"
         self.entity.color = (191,0,0)
@@ -54,4 +58,4 @@ class Fighter(BaseComponent):
         self.entity.name = f"Remains of {self.entity.name}"
         self.entity.render_order = RenderOrder.CORPSE
         
-        print(death_message)
+        self.engine.message_log.add_message(death_message,death_message_color)

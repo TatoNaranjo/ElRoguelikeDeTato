@@ -2,6 +2,7 @@
 import tcod
 import copy
 
+import color
 from engine import Engine
 
 from procgen import generate_dungeon
@@ -17,7 +18,7 @@ def main() ->None:
 
     #Added two integers which are used in the GameMap class to describe it's width and height.
     map_width = 80
-    map_height = 45
+    map_height = 43
 
     #Added a few variables to set the maximum and minimum size of the rooms, along with the 
     #Maximun number of rooms one floor can have.
@@ -49,6 +50,10 @@ def main() ->None:
     )
     #We pass it into engine.
     engine.update_fov()
+
+    engine.message_log.add_message(
+        "Hello and welcome, adventurer, to Tato's Roguelike",color.welcome_text
+    )
         #This creates the Screen
     with tcod.context.new_terminal(
         screen_width,
@@ -57,6 +62,7 @@ def main() ->None:
         title = "El Roguelike de Tato",
         vsync=True,
     ) as context:
+    
         #Creates the console to display the elements
 
         #By default numpy acceses 2D arrays in [y,x] so this line reverses it to [x,y]
@@ -64,10 +70,11 @@ def main() ->None:
 
         #Game loop core init.
         while True:
-            #Printing our @ character.
-            engine.render(console=root_console,context=context)
+            root_console.clear()
+            engine.event_handler.on_render(console=root_console)
+            context.present(root_console)
 
-            engine.event_handler.handle_events()
+            engine.event_handler.handle_events(context)
             
 
 if __name__ == "__main__":
