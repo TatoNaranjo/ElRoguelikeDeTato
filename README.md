@@ -37,7 +37,7 @@ python main.py
 Puedes revisar los controles en el archivo [Controls](https://github.com/TatoNaranjo/ElRoguelikeDeTato/blob/main/Hotkeys.txt)
 
 ## Licencia ⚖️
-Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](https://github.com/TatoNaranjo/ElRoguelikeDeTato/blob/main/LICENSE) para más detalles.
+Este proyecto está hecho bajo la Licencia MIT. Ver el archivo [LICENSE](https://github.com/TatoNaranjo/ElRoguelikeDeTato/blob/main/LICENSE) para más detalles.
 
 ## Contribución 🫂:
 Este es un proyecto Open Source, por lo tanto está abierto para cualquier persona que desee contribuir al mismo por medio de la corrección de Bugs o la añadidura de nuevas funciones.
