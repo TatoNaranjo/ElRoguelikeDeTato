@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import copy
-from typing import Optional,Tuple,Type, TypeVar, TYPE_CHECKING
+from typing import Optional,Tuple,Type, TypeVar, TYPE_CHECKING, Union
 from render_order import RenderOrder
 
 if TYPE_CHECKING:
     from components.ai import BaseAI
+    from components.consumable import Consumable
     from components.fighter import Fighter
+    from components.inventory import Inventory
     from game_map import GameMap
 
 T = TypeVar("T",bound="Entity")
@@ -15,7 +17,7 @@ class Entity:
     A generic object to represent players, enemies, items, etc.
     """
 
-    parent:GameMap
+    parent:Union[GameMap,Inventory]
     # Initializer takes four arguments: x,y,char,color
     """
     x and y: Entity's coordinates on the map.
@@ -35,6 +37,7 @@ class Entity:
         name: str = "<unnamed>",
         blocks_movement:bool = False,
         render_order: RenderOrder = RenderOrder.CORPSE,
+
     ):
         self.x = x
         self.y = y
@@ -94,7 +97,8 @@ class Actor(Entity):
             color: Tuple[int,int,int] = (255,255,255),
             name: str = "<Unnamed>",
             ai_cls: Type[BaseAI],
-            fighter:Fighter
+            fighter:Fighter,
+            inventory:Inventory,
     ):
         super().__init__(
             x=x,
@@ -116,11 +120,39 @@ class Actor(Entity):
 
         self.fighter=fighter
         self.fighter.parent = self
+        
+        self.inventory = inventory
+        self.inventory.parent = self
 
     @property
     def is_alive(self)->bool:
         """Returns true as long as this actor can perform actions."""
         return bool(self.ai)
+
+class Item(Entity):
+    def __init__(
+            self,
+            *,
+            x: int = 0,
+            y: int = 0,
+            char: str = "?",
+            color: Tuple[int,int,int] = (255,255,255),
+            name: str = "<Unnamed>",
+            consumable: Consumable,
+    ):
+        super().__init__(
+            x=x,
+            y=y,
+            char = char,
+            color = color,
+            name = name,
+            blocks_movement= False,
+            render_order=RenderOrder.ITEM,
+        )
+        self.consumable = consumable
+        self.consumable.parent = self
+        
+
         
 
 

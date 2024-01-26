@@ -5,7 +5,7 @@ import numpy as np #type: ignore
 from tcod.console import Console
 
 
-from entity import Actor
+from entity import Actor, Item
 import tile_types
 
 
@@ -44,6 +44,10 @@ class GameMap:
             for entity in self.entities
             if isinstance(entity,Actor) and entity.is_alive
         )
+    
+    @property
+    def items(self)->Iterator[Item]:
+        yield from (entity for entity in self.entities if isinstance(entity,Item))
 
         # Iterates through all the entities, if one is found that blocks movement and occupies the given
         # Location_x and location_y coordinates, returns that Entity, otherwise return None instead.
