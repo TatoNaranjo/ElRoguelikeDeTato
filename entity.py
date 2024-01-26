@@ -15,7 +15,7 @@ class Entity:
     A generic object to represent players, enemies, items, etc.
     """
 
-    gamemap:GameMap
+    parent:GameMap
     # Initializer takes four arguments: x,y,char,color
     """
     x and y: Entity's coordinates on the map.
@@ -27,7 +27,7 @@ class Entity:
      """
     def __init__(
         self,
-        gamemap:Optional[GameMap]=None,
+        parent:Optional[GameMap]=None,
         x: int = 0,
         y: int = 0,
         char: str = "?",
@@ -43,12 +43,16 @@ class Entity:
         self.name = name
         self.blocks_movement = blocks_movement
         self.render_order = render_order
-        if gamemap:
-            #If gamemap isn't provided now then it will be set later.
-            self.gamemap=gamemap
-            gamemap.add(self)
+        if parent:
+            #If parent isn't provided now then it will be set later.
+            self.parent=parent
+            parent.entities.add(self)
 
 
+    @property
+    def gamemap(self) -> GameMap:
+        return self.parent.gamemap
+    
     # Takes the GameMap instance, along with x and y for locations. It then creates a clone of the
     # Instance of Entity and assigns the x and y variables to it. It then adds the entity to the gamemap's
     # entities and returns the clone.
@@ -57,7 +61,7 @@ class Entity:
         clone = copy.deepcopy(self)
         clone.x = x
         clone.y = y
-        clone.gamemap = gamemap
+        clone.parent = gamemap
         gamemap.entities.add(clone)
         return clone    
 
@@ -67,9 +71,10 @@ class Entity:
         self.y = y
 
         if gamemap:
-            if hasattr(self,"gamemap"): #Possibly undefined
-                self.gamemap.entities.remove(self)
-            self.gamemap = gamemap
+            if hasattr(self,"parent"): #Possibly uninitialized
+                if self.parent is self.gamemap:
+                    self.gamemap.entities.remove(self)
+            self.parent = gamemap
             gamemap.entities.add(self)
             
     #This method takes dx and dy as arguments, and uses them to modify the entity's position.
@@ -110,7 +115,7 @@ class Actor(Entity):
         self.ai: Optional[BaseAI] = ai_cls(self)
 
         self.fighter=fighter
-        self.fighter.entity = self
+        self.fighter.parent = self
 
     @property
     def is_alive(self)->bool:
