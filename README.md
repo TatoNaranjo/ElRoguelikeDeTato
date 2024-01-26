@@ -34,7 +34,7 @@ Para iniciar el juego, ejecuta el siguiente comando:
 python main.py
 ```
 ## Controles 🕹️:
-Puedes revisar los controles en el archivo [Controls](https://github.com/TatoNaranjo/ElRoguelikeDeTato/blob/main/Hotkeys.txt)
+Puedes revisar los controles en el archivo [Controls](https://github.com/TatoNaranjo/ElRoguelikeDeTato/blob/main/Controls.txt)
 
 ## Licencia ⚖️
 Este proyecto está hecho bajo la Licencia MIT. Ver el archivo [LICENSE](https://github.com/TatoNaranjo/ElRoguelikeDeTato/blob/main/LICENSE) para más detalles.
