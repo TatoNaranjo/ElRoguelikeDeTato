@@ -1,5 +1,6 @@
 i - look at the inventory
 [a-z] - use an item of the inventory.
 g - grab an item in the floor.
+d - drop an item to the floor.
 
 v - See a log of all past messages.

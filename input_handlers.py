@@ -397,7 +397,7 @@ class MainGameEventHandler(EventHandler):
         elif key == tcod.event.KeySym.g:
             action = PickupAction(player)
 
-        # Press g to open inventory.
+        # Press i to open inventory.
         elif key == tcod.event.KeySym.i:
             self.engine.event_handler = InventoryActivateEventHandler(self.engine)
 
