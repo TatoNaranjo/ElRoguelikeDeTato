@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import math
 from typing import Optional,Tuple,Type, TypeVar, TYPE_CHECKING, Union
 from render_order import RenderOrder
 
@@ -79,7 +80,13 @@ class Entity:
                     self.gamemap.entities.remove(self)
             self.parent = gamemap
             gamemap.entities.add(self)
-            
+
+    def distance(self, x:int, y:int)->float:
+        """
+        Return the distance between the current entity and the given (x, y) coordinate.
+                
+        """      
+        return math.sqrt((x-self.x)**2 + (y-self.y)**2)
     #This method takes dx and dy as arguments, and uses them to modify the entity's position.
     def move(self,dx:int,dy:int)->None:
         # Move the entity by a given amount

@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from typing import List,Tuple, TYPE_CHECKING
+import random
+from typing import List, Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
 import tcod
 
-from actions import Action, MeleeAction, MovementAction, WaitAction
+from actions import Action, MeleeAction, MovementAction, WaitAction, BumpAction
 
 
 if TYPE_CHECKING:
@@ -53,6 +54,55 @@ class BaseAI(Action):
             #Convert from List[List[int]] to List[Tuple[int,int]]
             return [(index[0],index[1]) for index in path]
 
+
+class ConfusedEnemy(BaseAI):
+    """
+    A confused enemy will stumble around aimlessly for a given number of turns, then revert back to it's previous AI
+    If an actor occupies a tile it is randomly moving into, it will attack.
+    
+    
+    Entity: The actor who is being confused.
+    Previous:ai: The AI class that actor currently has. Used to get back to the previous AI's entity.
+    Turns_remaining: How many turns the confussion effect will last for.
+    """
+
+    def __init__(
+            self, entity:Actor,previous_ai:Optional[BaseAI],turns_remaining:int
+    ):
+        super().__init__(entity)
+
+        self.previous_ai = previous_ai
+        self.turns_remaining = turns_remaining
+
+    # It causes the entity to move in a randomly selected direction. Uses bumpAction so, it will try to move into a tile.
+    # If there's an actor there, it will attack it.
+    def perform(self) -> None:
+        #Revert the AI Back to the original state if the effect has run its course.
+        if self.turns_remaining<=0:
+            self.engine.message_log.add_message(
+                f"The {self.entity.name} is no longer confused."
+            )
+            self.entity.ai = self.previous_ai
+        else:
+            # Pick up a random direction.
+            direction_x, direction_y = random.choice(
+                [
+                    (-1, -1),  # Northwest
+                    (0, -1),  # North
+                    (1, -1),  # Northeast
+                    (-1, 0),  # West
+                    (1, 0),  # East
+                    (-1, 1),  # Southwest
+                    (0, 1),  # South
+                    (1, 1),  # Southeast
+                ]
+            )
+            # Every turn the remaining turns effect duration will decrease by 1.
+            self.turns_remaining-=1
+
+            # The actor will either ty to move or attack in the chosen random direction.
+            # It's possible the actor will just bump into the wall, wasting a turn.
+            return BumpAction(self.entity,direction_x,direction_y).perform()
 class HostileEnemy(BaseAI):
     def __init__(self,entity:Actor):
         super().__init__(entity)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 #Python's type hinting system
-from typing import Optional, TYPE_CHECKING
+from typing import Callable, Tuple, Optional, TYPE_CHECKING
 
 #Importing tcod event system to use tcod's event system.
 import tcod.event
@@ -57,6 +57,10 @@ WAIT_KEYS = {
     tcod.event.KeySym.CLEAR,
 }
 
+CONFIRM_KEYS = {
+    tcod.event.KeySym.RETURN,
+    tcod.event.KeySym.KP_ENTER
+}
 #Creating a class called EventHandler which is a subclass of tcod's EventDispatch class.
 #Event Dispatch allows us to send an event to his proper method.
 
@@ -230,7 +234,132 @@ class InventoryDropHandler(InventoryEventHandler):
         """Drop this item"""
 
         return actions.DropItem(self.engine.player,item)
-# EventHandler is now the base class for our other two classes
+    
+
+# SelectIndexHandler is what we’ll use when we want to select a tile on the map.
+
+class SelectIndexHandler(AskUserEventHandler):
+    """Handles asking the user for an index on the map."""
+
+    # Sets the mouse_location to the player's current location.
+    def __init__(self,engine:Engine):
+        """Sets the cursor to the player when this handler is constructed."""
+        super().__init__(engine)
+        player = self.engine.player
+        engine.mouse_location = player.x, player.y
+    
+    # Will render the console as normal, but also adds a cursor on top that can be used to show where the current
+    # Cursor is.
+    def on_render(self,console: tcod.Console) ->None:
+        """Highlight the tile under the cursor."""
+        super().on_render(console)
+        x, y = self.engine.mouse_location
+        console.rgb["bg"][x,y] = color.white
+        console.rgb["fg"][x,y] = color.black
+
+    # Gives a way to move the cursor we're drawing around using the keyboard instead of the mouse (using the mouse is still possible)
+    # By holding shift, control or alt while pressing a movement key, the cursor will move around faster by skipping over
+    # A few spaces.
+    
+    # If the player presses a confirm key, the method returns the current cursor's location.
+    def ev_keydown(self,event:tcod.event.KeyDown) -> Optional[Action]:
+        """Check for key movement or confirmation Keys."""
+        key = event.sym
+        if key in MOVE_KEYS:
+            modifier = 1 # Holding modifier keys will speed up key movement
+            if event.mod & (tcod.event.KMOD_LSHIFT | tcod.event.KMOD_RCTRL):
+                modifier*=5
+            if event.mod & (tcod.event.KMOD_LCTRL | tcod.event.KMOD_RCTRL):
+                modifier*=10
+            if event.mod & (tcod.event.KMOD_LALT | tcod.event.KMOD_RALT):
+                modifier*=20
+            
+            x,y = self.engine.mouse_location
+            dx, dy = MOVE_KEYS[key]
+            x += dx*modifier
+            y += dy*modifier
+            # Clamp the cursor index to the map size
+            x = max(0,min(x,self.engine.game_map.width-1))
+            y = max(0,min(y,self.engine.game_map.height-1))
+
+            self.engine.mouse_location = x,y
+            return None
+        
+        elif key in CONFIRM_KEYS:
+            return self.on_index_selected(*self.engine.mouse_location)
+        return super().ev_keydown(event)
+    
+    # ev_mousebuttondown also returns the location, if the clicked space is within the map boundaries.
+    def ev_mousebuttondown(self,event:tcod.event.MouseButtonDown) -> Optional[Action]:
+        """Left Click confirms a selection."""
+        if self.engine.game_map.in_bounds(*event.tile):
+            if event.button == 1:
+                return self.on_index_selected(*event.tile)
+        return super().ev_mousebuttondown(event)
+    
+    # Abstract method that is implemented by LookHandler.
+    def on_index_selected(self, x:int, y:int) ->Optional[Action]:
+        """Called When a index is selected."""
+        raise NotImplementedError()
+
+
+# LookHandler inherits from SelectIndexHandler, and all it does is return to the MainGameEventHandler
+# when receiving a confirmation key. This is because it doesn’t need to do anything special, it’s just 
+# used in the case where our player wants to have a look around.
+class LookHandler(SelectIndexHandler):
+    """Lets the player look around using the keyboard."""
+    def on_index_selected(self, x:int, y:int) ->None:
+        """Return to main handler."""
+        self.engine.event_handler = MainGameEventHandler(self.engine)
+
+
+
+# SingleRangedAttackHandler can be used for any scroll or ranged attack that targets one location.
+class SingleRangedAttackHandler(SelectIndexHandler):
+    """Handles targeting a simgle enemy. Only the enemy selected will be affected."""
+    def __init__(
+            self, engine:Engine, callback:Callable[[Tuple[int,int]],Optional[Action]]
+    ):
+        super().__init__(engine)
+
+        self.callback = callback
+
+    def on_index_selected(self,x:int,y:int)-> Optional[Action]:
+        return self.callback((x,y))
+    
+
+class AreaRangedAttackHandler(SelectIndexHandler):
+    """Handles targeting an area within a given radius. Any entity within the area will be affected."""
+
+    def __init__(
+        self,
+        engine: Engine,
+        radius:int,
+        callback:Callable[[Tuple[int,int]],Optional[Action]],
+    ):
+        super().__init__(engine)
+
+        self.radius = radius
+        self.callback = callback
+
+    def on_render(self,console:tcod.Console) ->None:
+        """Highlight the tile under the cursor."""
+        super().on_render(console)
+
+        x,y = self.engine.mouse_location
+
+        # Draw a rectangle around the targeted area, so the player can see the affected tiles.
+        console.draw_frame(
+            x = x- self.radius-1,
+            y = y-self.radius-1,
+            width = self.radius **2,
+            height = self.radius **2,
+            fg = color.red,
+            clear = False,
+        )
+    
+    def on_index_selected(self, x: int, y: int) -> Optional[Action]:
+        return self.callback((x,y))
 class MainGameEventHandler(EventHandler):    
 
 
@@ -268,11 +397,16 @@ class MainGameEventHandler(EventHandler):
         elif key == tcod.event.KeySym.g:
             action = PickupAction(player)
 
+        # Press g to open inventory.
         elif key == tcod.event.KeySym.i:
             self.engine.event_handler = InventoryActivateEventHandler(self.engine)
 
+        # Press d to drop an item
         elif key == tcod.event.KeySym.d:
             self.engine.event_handler = InventoryDropHandler(self.engine)
+
+        elif key == tcod.event.KeySym.SLASH:
+            self.engine.event_handler = LookHandler(self.engine)
         #We return the action.
         return action
     
