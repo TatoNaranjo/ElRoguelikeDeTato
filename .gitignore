@@ -1,2 +1,4 @@
 .tmpdrivedownload/
 .tmp.driveupload/
+# Saved games
+*.sav
