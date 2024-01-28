@@ -1,15 +1,20 @@
 #!/usr/bin/env python3
 import tcod
 import copy
-
+import color
 import traceback
 
-import color
-from engine import Engine
+import exceptions
+import input_handlers
 
-from procgen import generate_dungeon
+import setup_game
 
-import entity_factories
+
+def save_game(handler:input_handlers.BaseEventHandler,filename:str) ->None:
+    """If the current event handler has an active Engine then save it."""
+    if isinstance(handler,input_handlers.EventHandler):
+        handler.engine.save_as(filename)
+        print("Game Saved.")
 
 
 def main() ->None:
@@ -18,46 +23,12 @@ def main() ->None:
     screen_width = 80
     screen_height = 50
 
-    #Added two integers which are used in the GameMap class to describe it's width and height.
-    map_width = 80
-    map_height = 43
-
-    #Added a few variables to set the maximum and minimum size of the rooms, along with the 
-    #Maximun number of rooms one floor can have.
-    room_max_size = 10
-    room_min_size = 6
-    max_rooms = 30
-
-    max_monsters_per_room = 2
-    max_items_per_room = 2
-
-
     #tcod will use our font from dejavu10x10_gs_tc.png
     tileset = tcod.tileset.load_tilesheet(
         'src/dejavu10x10_gs_tc.png',32,8,tcod.tileset.CHARMAP_TCOD
     )
 
-    player = copy.deepcopy(entity_factories.player)
-    engine = Engine(player=player)
-
-    #The game_map variable holds our initialized GameMap.
-    engine.game_map = generate_dungeon(
-        max_rooms=max_rooms,
-        room_min_size=room_min_size,
-        room_max_size=room_max_size,
-        map_width=map_width,
-        map_height = map_height,
-        max_monsters_per_room=max_monsters_per_room,
-        max_items_per_room=max_items_per_room,
-        engine=engine,
-
-    )
-    #We pass it into engine.
-    engine.update_fov()
-
-    engine.message_log.add_message(
-        "Hello and welcome, adventurer, to Tato's Roguelike",color.welcome_text
-    )
+    handler: input_handlers.BaseEventHandler = setup_game.MainMenu()
         #This creates the Screen
     with tcod.context.new_terminal(
         screen_width,
@@ -72,22 +43,31 @@ def main() ->None:
         #By default numpy acceses 2D arrays in [y,x] so this line reverses it to [x,y]
         root_console = tcod.console.Console(screen_width,screen_height,order = "F")
 
-        #Game loop core init.
-        while True:
-            root_console.clear()
-            engine.event_handler.on_render(console=root_console)
-            context.present(root_console)
+        try:
+            while True:
+                root_console.clear()
+                handler.on_render(console=root_console)
+                context.present(root_console)
 
-            # A generalized catch all solution. It will print all exceptions to the message log.
-            # Helpful for debugging the game or getting error reports from users.
-            try:
-                for event in tcod.event.wait():
-                    context.convert_event(event)
-                    engine.event_handler.handle_events(event)
-            except Exception:
-                traceback.print_exc() #Print error to stderr.
-                # Then print the error to the message log.
-                engine.message_log.add_message(traceback.format_exc(),color.error)
+                try:
+                    for event in tcod.event.wait():
+                        context.convert_event(event)
+                        handler = handler.handle_events(event)
+                except Exception: #Handle Exceptions in game
+                    traceback.print_exc() # Print error to stderr
+                    # Then print the error to the message log.
+                    if isinstance(handler,input_handlers.EventHandler):
+                        handler.engine.message_log.add_message(
+                            traceback.format_exc(),color.error
+                        )
+        except exceptions.QuitWithoutSaving:
+            raise
+        except SystemExit: #Save and quit
+            save_game(handler,"savegame.sav")
+            raise
+        except BaseException: # Save on any other unexpected exceptions
+            save_game(handler,"savegame.sav")
+            raise
 
             
 

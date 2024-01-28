@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import lzma
+import pickle
 from tcod.console import Console
 from tcod.map import compute_fov
 
@@ -9,14 +11,15 @@ from tcod.map import compute_fov
 import exceptions
 
 #from actions import EscapeAction,MovementAction
-from input_handlers import MainGameEventHandler
+
 from message_log import MessageLog
 from render_functions import render_bar,render_names_at_mouse_location
+
+
 
 if TYPE_CHECKING:
     from entity import Actor
     from game_map import GameMap
-    from input_handlers import EventHandler
 class Engine:
     game_map: GameMap
     # The init function takes three arguments:
@@ -27,7 +30,6 @@ class Engine:
             access player a lot more than a random entity in entities.
     """
     def __init__(self,player:Actor):
-        self.event_handler: EventHandler = MainGameEventHandler(self)
         self.message_log = MessageLog()
         self.mouse_location = (0,0)
         self.player = player
@@ -78,5 +80,15 @@ class Engine:
         render_names_at_mouse_location(console=console, x = 21, y = 44, engine=self)
 
 
+    """
+    pickle.dumps serializes an object hierarchy in Python. lzma.compress compresses the data, 
+    so it takes up less space. We then use with open(filename, "wb") as f: to write the file 
+    (wb means “write in binary mode”), calling f.write(save_data) to write the data.
+    """
+    def save_as(self,filename:str)->None:
+        """Save this Engine instance as a compressed file."""
+        save_data = lzma.compress(pickle.dumps(self))
+        with open(filename, "wb") as f:
+            f.write(save_data)
         
     
