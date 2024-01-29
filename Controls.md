@@ -8,6 +8,8 @@
 - **[a-z]** - Usar un objeto del inventario.
 - **g** - Recoger un objeto del suelo.
 - **d** - Soltar un objeto en el suelo.
+- **x** - Descender por la escalera al siguiente nivel.
 
 ## Otros Controles
 - **v** - Ver un registro de todos los mensajes anteriores.
+

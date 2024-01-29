@@ -155,6 +155,8 @@ def generate_dungeon(
     # Creating a running list of the game rooms.
     rooms: list[RectangularRoom]=[]
 
+    center_of_last_room = (0,0)
+
     # We iterate from 0 to max_rooms. This algorithm may or may not place a room depending on
     # If it intersects with another, so we won't know how many rooms we're going to end up with,
     # But at least that number can't exceed a certain amount.
@@ -179,6 +181,7 @@ def generate_dungeon(
 
         #Dig out this rooms inner area.
         dungeon.tiles[new_room.inner] = tile_types.floor
+        center_of_last_room = new_room.center
 
         if len(rooms) == 0:
             # The first room, where the player starts.
@@ -194,6 +197,9 @@ def generate_dungeon(
                 dungeon.tiles[x,y] = tile_types.floor
         
         place_entities(new_room,dungeon,max_monsters_per_room,max_items_per_room)
+
+        dungeon.tiles[center_of_last_room] = tile_types.down_stairs
+        dungeon.down_stairs_location = center_of_last_room
         # Finally, append the new room to the list.
         rooms.append(new_room)
     return dungeon

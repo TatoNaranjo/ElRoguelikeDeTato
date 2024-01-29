@@ -437,8 +437,11 @@ class MainGameEventHandler(EventHandler):
         #Key holds the actual key the player pressed. Without additional info about modifiers like
         #'Shift' or 'Alt'
         key = event.sym
-
+        modifier = event.mod
         player = self.engine.player
+
+        if key == tcod.event.KeySym.x:
+            return actions.TakeStairsAction(player)
 
         if key in MOVE_KEYS:
             dx,dy = MOVE_KEYS[key]
