@@ -280,7 +280,7 @@ class LevelUpEventHandler(AskUserEventHandler):
         console.print(
             x = x+1,
             y = 6,
-            string = f"c) Constitution (+1 defense, from {self.engine.player.fighter.defense})",
+            string = f"c) Defense (+1 defense, from {self.engine.player.fighter.defense})",
         )   
     
     def ev_keydown(self,event:tcod.event.KeyDown) -> Optional[ActionOrHandler]:
