@@ -59,6 +59,8 @@ class Fighter(BaseComponent):
         self.parent.render_order = RenderOrder.CORPSE
         
         self.engine.message_log.add_message(death_message,death_message_color)
+
+        self.engine.player.level.add_xp(self.parent.level.xp_given)
     
     # This function will restore a certain amount of HP, up to the maximum and return 
     # The amount that was healed. If the entity's health is at full just return()
