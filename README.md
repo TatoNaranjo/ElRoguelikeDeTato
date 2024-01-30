@@ -11,6 +11,8 @@
 ## Qué es El Roguelike de Tato?
 Este proyecto tiene como objetivo proporcionar una introducción práctica al desarrollo de juegos en Python, explorando las estructuras básicas del lenguaje mientras construyo un juego inspirado en uno de mis géneros favoritos: los Roguelikes. El juego consiste en una exploración de mazmorras generadas de manera procedural (aleatoria).
 
+## Creditos
+https://rogueliketutorials.com/
 ## Dependencias.
 - Python 3.7 o Superior.
 - Tcod Library 11.3
