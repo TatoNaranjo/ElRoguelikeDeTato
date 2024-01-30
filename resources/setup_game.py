@@ -10,11 +10,11 @@ import traceback
 from typing import Optional
 import tcod
 from tcod import libtcodpy
-import color
-from engine import Engine
-import entity_factories
-from game_map import GameWorld
-import input_handlers
+from resources import color
+from resources.engine import Engine
+from resources import entity_factories
+from resources.game_map import GameWorld
+from resources import input_handlers
 
 # Load the background image and remove the alpha channel.
 background_image = tcod.image.load("src/menu_background.png")[:,:,:3]

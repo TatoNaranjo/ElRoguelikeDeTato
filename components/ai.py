@@ -6,7 +6,7 @@ from typing import List, Optional, Tuple, TYPE_CHECKING
 import numpy as np
 import tcod
 
-from actions import Action, MeleeAction, MovementAction, WaitAction, BumpAction
+from resources.actions import Action, MeleeAction, MovementAction, WaitAction, BumpAction
 
 
 if TYPE_CHECKING:

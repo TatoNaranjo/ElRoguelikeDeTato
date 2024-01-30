@@ -5,13 +5,13 @@ import numpy as np #type: ignore
 from tcod.console import Console
 
 
-from entity import Actor, Item
-import tile_types
+from resources.entity import Actor, Item
+from resources import tile_types
 
 
 if TYPE_CHECKING:
-    from engine import Engine
-    from entity import Entity
+    from resources.engine import Engine
+    from resources.entity import Entity
 
 class GameMap:
     
@@ -140,7 +140,7 @@ class GameWorld:
             self.current_floor = current_floor
     
     def generate_floor(self)->None:
-        from procgen import generate_dungeon
+        from resources.procgen import generate_dungeon
 
         self.current_floor+=1
 

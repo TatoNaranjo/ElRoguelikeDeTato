@@ -8,18 +8,18 @@ from tcod.console import Console
 from tcod.map import compute_fov
 
 # To handle the Exceptions error messages.
-import exceptions
+from resources import exceptions
 
 #from actions import EscapeAction,MovementAction
 
-from message_log import MessageLog
-import render_functions
+from resources.message_log import MessageLog
+from resources import render_functions
 
 
 
 if TYPE_CHECKING:
-    from entity import Actor
-    from game_map import GameMap,GameWorld
+    from resources.entity import Actor
+    from resources.game_map import GameMap,GameWorld
 class Engine:
     game_map: GameMap
     game_world:GameWorld

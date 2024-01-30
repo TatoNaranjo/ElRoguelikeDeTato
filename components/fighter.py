@@ -1,14 +1,14 @@
 #Import and inherit from BaseComponent.
 from __future__ import annotations
 
-import color
+from resources import color
 from components.base_component import BaseComponent
 
-from render_order import RenderOrder
+from resources.render_order import RenderOrder
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from entity import Actor
+    from resources.entity import Actor
 class Fighter(BaseComponent):
     parent: Actor
     """

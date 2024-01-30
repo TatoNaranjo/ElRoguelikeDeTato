@@ -10,20 +10,20 @@ import tcod.event
 from tcod import libtcodpy
 
 
-import actions
-from actions import(
+import resources.actions
+from resources.actions import(
     Action,
     BumpAction,
     PickupAction,
     WaitAction
 )
-import color
-from entity import Item
-import exceptions
+import resources.color
+from resources.entity import Item
+import resources.exceptions
 
 if TYPE_CHECKING:
-    from engine import Engine
-    from entity import Item
+    from resources.engine import Engine
+    from resources.entity import Item
 
 MOVE_KEYS = {
     # Arrow keys.
@@ -151,8 +151,8 @@ class EventHandler(BaseEventHandler):
         
         try:
             action.perform()
-        except exceptions.Impossible as exc:
-            self.engine.message_log.add_message(exc.args[0],color.impossible)
+        except resources.exceptions.Impossible as exc:
+            self.engine.message_log.add_message(exc.args[0],resources.color.impossible)
             return False #Skip Enemy Turn on Exceptions.
         
         self.engine.handle_enemy_turns()
@@ -296,7 +296,7 @@ class LevelUpEventHandler(AskUserEventHandler):
             else:
                 player.level.increase_defense()
         else:
-            self.engine.message_log.add_message("Invalid Entry.",color.invalid)
+            self.engine.message_log.add_message("Invalid Entry.",resources.color.invalid)
             return None
         
         return super().ev_keydown(event)
@@ -388,7 +388,7 @@ class InventoryEventHandler(AskUserEventHandler):
             try:
                 selected_item = player.inventory.items[index]
             except IndexError:
-                self.engine.message_log.add_message("Invalid Entry.", color.invalid)
+                self.engine.message_log.add_message("Invalid Entry.", resources.color.invalid)
                 return None
             return self.on_item_selected(selected_item)
         return super().ev_keydown(event)
@@ -407,7 +407,7 @@ class InventoryActivateEventHandler(InventoryEventHandler):
             # Return the action for the selected item.
             return item.consumable.get_action(self.engine.player)
         elif item.equippable:
-            return actions.EquipAction(self.engine.player,item)
+            return resources.actions.EquipAction(self.engine.player,item)
         else:
             return None
 
@@ -419,7 +419,7 @@ class InventoryDropHandler(InventoryEventHandler):
     def on_item_selected(self, item: Item) -> Optional[ActionOrHandler]:
         """Drop this item"""
 
-        return actions.DropItem(self.engine.player,item)
+        return resources.actions.DropItem(self.engine.player,item)
     
 
 # SelectIndexHandler is what we’ll use when we want to select a tile on the map.
@@ -440,8 +440,8 @@ class SelectIndexHandler(AskUserEventHandler):
         """Highlight the tile under the cursor."""
         super().on_render(console)
         x, y = self.engine.mouse_location
-        console.rgb["bg"][x,y] = color.white
-        console.rgb["fg"][x,y] = color.black
+        console.rgb["bg"][x,y] = resources.color.white
+        console.rgb["fg"][x,y] = resources.color.black
 
     # Gives a way to move the cursor we're drawing around using the keyboard instead of the mouse (using the mouse is still possible)
     # By holding shift, control or alt while pressing a movement key, the cursor will move around faster by skipping over
@@ -542,7 +542,7 @@ class AreaRangedAttackHandler(SelectIndexHandler):
             y = y-self.radius-1,
             width = self.radius **2,
             height = self.radius **2,
-            fg = color.red,
+            fg = resources.color.red,
             clear = False,
         )
     
@@ -567,7 +567,7 @@ class MainGameEventHandler(EventHandler):
         player = self.engine.player
 
         if key == tcod.event.KeySym.x:
-            return actions.TakeStairsAction(player)
+            return resources.actions.TakeStairsAction(player)
 
         if key in MOVE_KEYS:
             dx,dy = MOVE_KEYS[key]
@@ -608,7 +608,7 @@ class GameOverEventHandler(EventHandler):
         """Handle exiting out of a finished game."""
         if os.path.exists("savegame.sav"):
             os.remove("savegame.sav")# Deletes the active save file.
-        raise exceptions.QuitWithoutSaving() # Avoid saving a finished game
+        raise resources.exceptions.QuitWithoutSaving() # Avoid saving a finished game
     
     def ev_quit(self, event:tcod.event.Quit)->None:
         self.on_quit()
