@@ -4,15 +4,15 @@ import random
 from typing import Dict,Iterator, List,Tuple, TYPE_CHECKING
 
 import tcod
-import entity_factories
+from resources import entity_factories
 
 
-from game_map import GameMap
-import tile_types
+from resources.game_map import GameMap
+from resources import tile_types
 
 if TYPE_CHECKING:
-    from engine import Engine
-    from entity import Entity
+    from resources.engine import Engine
+    from resources.entity import Entity
 
 
 max_items_by_floor ={
@@ -29,7 +29,7 @@ max_monsters_by_floor = [
 # Dictionary that contains the floor number and the value of the chance on a list of tuples
 item_chances: Dict[int, List[Tuple[Entity,int]]] = {
     0: [(entity_factories.health_potion, 35)],
-    2: [(entity_factories.confusion_scroll, 10)],
+    2: [(entity_factories.confusion_scroll, 20)],
     4: [(entity_factories.lightning_scroll, 25),(entity_factories.sword,5)],
     6: [(entity_factories.fireball_scroll, 25),(entity_factories.chain_mail,15)],    
 }

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from components.base_component import BaseComponent
 
 if TYPE_CHECKING:
-    from entity import Actor
+    from resources.entity import Actor
 
 """
 This component holds all the level up logic of our character.

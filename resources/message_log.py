@@ -3,7 +3,7 @@ import textwrap
 
 import tcod
 
-import color
+from resources import color
 
 # Will be used to save and display messages in our log. It includes three pieces of information:
 """

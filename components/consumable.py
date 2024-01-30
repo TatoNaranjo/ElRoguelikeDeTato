@@ -2,19 +2,19 @@ from __future__ import annotations
 
 from typing import Optional, TYPE_CHECKING
 
-import actions
-import color
+from resources import actions
+from resources import color
 import components.ai
 from components.base_component import BaseComponent
 import components.inventory
-from exceptions import Impossible
-from input_handlers import (
+from resources.exceptions import Impossible
+from resources.input_handlers import (
     ActionOrHandler,
     AreaRangedAttackHandler,
     SingleRangedAttackHandler,)
 
 if TYPE_CHECKING:
-    from entity import Actor,Item
+    from resources.entity import Actor,Item
 
 
 class Consumable(BaseComponent):

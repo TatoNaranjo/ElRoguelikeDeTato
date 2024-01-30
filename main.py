@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import tcod
 import copy
-import color
+from resources import color
 import traceback
+from resources import input_handlers
+from resources import exceptions
 
-import exceptions
-import input_handlers
 
-import setup_game
+from resources import setup_game
 
 
 def save_game(handler:input_handlers.BaseEventHandler,filename:str) ->None:

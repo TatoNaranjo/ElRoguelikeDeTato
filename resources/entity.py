@@ -3,7 +3,7 @@ from __future__ import annotations
 import copy
 import math
 from typing import Optional,Tuple,Type, TypeVar, TYPE_CHECKING, Union
-from render_order import RenderOrder
+from resources.render_order import RenderOrder
 
 if TYPE_CHECKING:
     from components.ai import BaseAI
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from components.equippable import Equippable
     from components.inventory import Inventory
     from components.level import Level
-    from game_map import GameMap
+    from resources.game_map import GameMap
 
 T = TypeVar("T",bound="Entity")
 class Entity:

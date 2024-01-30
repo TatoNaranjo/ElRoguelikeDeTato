@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Tuple, TYPE_CHECKING
 
-import color
+from resources import color
 
 if TYPE_CHECKING:
     from tcod import Console
-    from engine import Engine
-    from game_map import GameMap
+    from resources.engine import Engine
+    from resources.game_map import GameMap
 
 def get_names_at_location(x: int, y:int, game_map:GameMap)->str:
     if not game_map.in_bounds(x,y) or not game_map.visible[x,y]:

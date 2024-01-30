@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Optional,Tuple,TYPE_CHECKING
 
-import color
-import exceptions
+from resources import color
+from resources import exceptions
 
 if TYPE_CHECKING:
-    from engine import Engine
-    from entity import Actor, Entity, Item
+    from resources.engine import Engine
+    from resources.entity import Actor, Entity, Item
 class Action:
     def __init__(self,entity:Actor)->None:
         super().__init__()
