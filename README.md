@@ -21,7 +21,7 @@ Este proyecto tiene como objetivo proporcionar una introducción práctica al de
 ## Instalación👷:
  1. Clona este repositorio en tu máquina local.
 ```git
-git clone https://github.com/TatoNaranjo/RoguelikePython.git
+git clone https://github.com/TatoNaranjo/ElRoguelikeDeTato
 ```
 2. Para instalar las dependencias ejecuta este comando:
 ```git
