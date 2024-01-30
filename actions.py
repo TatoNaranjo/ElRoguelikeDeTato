@@ -87,7 +87,8 @@ class ItemAction(Action):
     # Activates the consumable.
     def perform(self)-> None:
         """Invoke the item's hability, his action will be given to provide context."""
-        self.item.consumable.activate(self)
+        if self.item.consumable:
+            self.item.consumable.activate(self)
 
 
 
@@ -96,7 +97,19 @@ class ItemAction(Action):
 # Used to describe when the user wants to drop some Item in the game. 
 class DropItem(ItemAction):
     def perform(self) -> None:
+        if self.entity.equipment.item_is_equipped(self.item):
+            self.entity.inventory.toggle_equip(self.item)
+        
         self.entity.inventory.drop(self.item)
+
+class EquipAction(Action):
+    def __init__(self,entity:Actor,item:Item):
+        super().__init__(entity)
+
+        self.item = item
+    
+    def perform(self) -> None:
+        self.entity.equipment.toggle_equip(self.item)
 
 # Represents an actor saying "I'll do nothing this turn."
 class WaitAction(Action):
