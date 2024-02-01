@@ -34,6 +34,8 @@ Para iniciar el juego, ejecuta el siguiente comando:
 ```bash
 python main.py
 ```
+Si deseas comenzar otra partida, simplemente presiona la tecla `Esc` y vuelve a ejecutar el comando.
+
 ## Controles 🕹️:
 Puedes revisar los controles en el archivo [Controls](https://github.com/TatoNaranjo/ElRoguelikeDeTato/blob/main/Controls.md)
 
