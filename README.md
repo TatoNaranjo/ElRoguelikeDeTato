@@ -11,9 +11,10 @@
 ## Qué es El Roguelike de Tato?
 Este proyecto tiene como objetivo proporcionar una introducción práctica al desarrollo de juegos en Python, explorando las estructuras básicas del lenguaje mientras construyo un juego inspirado en uno de mis géneros favoritos: los Roguelikes. El juego consiste en una exploración de mazmorras generadas de manera procedural (aleatoria).
 
-## Creditos
+## Créditos :
 https://rogueliketutorials.com/
-## Dependencias.
+
+## Dependencias :
 - Python 3.7 o Superior.
 - Tcod Library 11.3
 - Numpy 1.18
@@ -39,7 +40,7 @@ Si deseas comenzar otra partida, simplemente presiona la tecla `Esc` y vuelve a 
 ## Controles 🕹️:
 Puedes revisar los controles en el archivo [Controls](https://github.com/TatoNaranjo/ElRoguelikeDeTato/blob/main/Controls.md)
 
-## Licencia ⚖️
+## Licencia ⚖️ :
 Este proyecto está hecho bajo la Licencia MIT. Ver el archivo [LICENSE](https://github.com/TatoNaranjo/ElRoguelikeDeTato/blob/main/LICENSE) para más detalles.
 
 ## Contribución 🫂:
